@@ -29,6 +29,7 @@ import java.util.List;
 @Singleton
 public class OAuthServiceHandler implements OAuthHandlerInterface {
 
+    private static final Long TOKEN_EXPIRATION_SECONDS = 3600L;
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final List<String> SCOPES = Collections.singletonList(SheetsScopes.SPREADSHEETS_READONLY);
 
@@ -45,8 +46,7 @@ public class OAuthServiceHandler implements OAuthHandlerInterface {
 
     @Override
     public Credential authenticate() throws IOException, GeneralSecurityException {
-        // TODO: CHECK IF TOKENS ARE EXPIRED
-        if (credentials == null) {
+        if (credentials == null || credentials.getExpiresInSeconds() <= 0) {
             credentials = getTokenCredentials();
         }
         return this.credentials;
@@ -62,6 +62,8 @@ public class OAuthServiceHandler implements OAuthHandlerInterface {
                 .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(tokensPath)))
                 .setAccessType("offline")
                 .build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+        Credential credentials = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+        credentials.setExpiresInSeconds(TOKEN_EXPIRATION_SECONDS);
+        return credentials;
     }
 }

@@ -14,6 +14,7 @@ import java.security.GeneralSecurityException;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+// INTEGRATION TEST
 public class OAuthServiceHandlerTest {
 
     @Inject
