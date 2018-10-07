@@ -1,6 +1,7 @@
 package com.googleappwrapper;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.googleappwrapper.authentication.OAuthHandlerInterface;
 import com.googleappwrapper.authentication.OAuthServiceHandler;
@@ -11,6 +12,7 @@ import java.util.Properties;
 public class AppConfig extends AbstractModule {
 
     private static final String APP_PROPERTIES_FILE = "app.properties";
+
     private Properties properties;
 
     public AppConfig() throws IOException {
@@ -20,7 +22,8 @@ public class AppConfig extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(OAuthHandlerInterface.class).to(OAuthServiceHandler.class);
+        bind(OAuthHandlerInterface.class).to(OAuthServiceHandler.class).in(Singleton.class);
         bindConstant().annotatedWith(Names.named("filePath")).to(properties.getProperty("FILE_PATH"));
+        bindConstant().annotatedWith(Names.named("tokensPath")).to(properties.getProperty("TOKEN_PATH"));
     }
 }
